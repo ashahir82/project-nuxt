@@ -6,52 +6,48 @@
             <v-container>
                 <HeaderMain title="Senarai Kursus TVET" />
 
-                <v-card v-for="course in courses.data" class="mb-3">
-                    <v-card-text>
-                        <h3 class="v-heading text-h6 text-sm-h5 text-lg-h4">{{ course.kursus }}</h3>
-                        <p>Kursus di PB {{ course.pusat }}</p>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn>Click me</v-btn>
-                    </v-card-actions>
+                <v-card class="mb-3">
+                    <v-card-text>Carian</v-card-text>
                 </v-card>
+
+                <v-list lines="two">
+                    <v-list-item v-for="course in courses" :key="course.id" :subtitle="course.pusat" :title="course.kursus">
+                        <template v-slot:prepend>
+                            <v-avatar color="grey-lighten-1">
+                                <v-icon color="white">mdi-folder</v-icon>
+                            </v-avatar>
+                        </template>
+
+                        <template v-slot:append>
+                            <v-btn
+                                color="grey-lighten-1"
+                                icon="mdi-information"
+                                variant="text"
+                            ></v-btn>
+                        </template>
+                    </v-list-item>
+                </v-list>
             </v-container>
 
-            <v-pagination v-model="page" :length="courses.last_page"></v-pagination>
+            <v-pagination v-model="page" :length="pages" :total-visible="3"></v-pagination>
         </v-main>
 
         <BarBottom menu="2" />
-
-        <v-dialog v-model="dialog" width="auto">
-            <v-card prepend-icon="mdi-update" title="Update in progress">
-                <v-card-text>
-                    <p>Your application will relaunch automatically after the update is complete.</p>
-                </v-card-text>
-                <v-divider></v-divider>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
-                    <v-btn color="primary" text="Save" variant="tonal" @click="dialog = false"></v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
     </v-layout>
 </template>
 
 <script setup>
-import axios from "axios";
+    import axios from "axios";
     const url = "http://mytevt-laravel.test/api/senarai-kursus?page=";
     const courses = ref([]);
     const page = ref(1);
+    const pages = ref(1);
     const dialog = ref(false);
 
     const apiKursus = async() => {
         await axios.get(url + page.value).then((response) => {
-            console.log("data: " + response.data.data);
-            console.log("page: " + page.value);
-            courses.value = response.data.data;
+            courses.value = response.data.data.data;
+            pages.value = response.data.data.last_page;
         });
     };
 
@@ -59,9 +55,9 @@ import axios from "axios";
         apiKursus(page.value);
     });
 
-    watch(page => {
+    watchEffect(page => {
         apiKursus(page.value);
-    })
+    });
 </script>
 
 <style lang="scss" scoped>
