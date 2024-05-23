@@ -6,27 +6,19 @@
             <v-container>
                 <HeaderMain title="Senarai Kursus TVET" />
 
-                <v-list lines="two">
-                    <v-list-subheader inset>Folders</v-list-subheader>
-
-                    <v-list-item v-for="folder in folders" :key="folder.title" :subtitle="folder.subtitle" :title="folder.title">
-                        <template v-slot:prepend>
-                            <v-avatar color="grey-lighten-1">
-                                <v-icon color="white">mdi-folder</v-icon>
-                            </v-avatar>
-                        </template>
-
-                        <template v-slot:append>
-                            <v-btn
-                                color="grey-lighten-1"
-                                icon="mdi-information"
-                                variant="text"
-                                @click="dialog = true"
-                            ></v-btn>
-                        </template>
-                    </v-list-item>
-                </v-list>
+                <v-card v-for="course in courses.data" class="mb-3">
+                    <v-card-text>
+                        <h3 class="v-heading text-h6 text-sm-h5 text-lg-h4">{{ course.kursus }}</h3>
+                        <p>Kursus di PB {{ course.pusat }}</p>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn>Click me</v-btn>
+                    </v-card-actions>
+                </v-card>
             </v-container>
+
+            <v-pagination v-model="page" :length="courses.last_page"></v-pagination>
         </v-main>
 
         <BarBottom menu="2" />
@@ -49,21 +41,27 @@
 </template>
 
 <script setup>
+import axios from "axios";
+    const url = "http://mytevt-laravel.test/api/senarai-kursus?page=";
+    const courses = ref([]);
+    const page = ref(1);
     const dialog = ref(false);
-    const folders = [
-        {
-        subtitle: 'Jan 9, 2014',
-        title: 'Photos',
-        },
-        {
-        subtitle: 'Jan 17, 2014',
-        title: 'Recipes',
-        },
-        {
-        subtitle: 'Jan 28, 2014',
-        title: 'Work',
-        },
-    ]
+
+    const apiKursus = async() => {
+        await axios.get(url + page.value).then((response) => {
+            console.log("data: " + response.data.data);
+            console.log("page: " + page.value);
+            courses.value = response.data.data;
+        });
+    };
+
+    onBeforeMount(async() => {
+        apiKursus(page.value);
+    });
+
+    watch(page => {
+        apiKursus(page.value);
+    })
 </script>
 
 <style lang="scss" scoped>
