@@ -5,19 +5,21 @@
         <v-main>
             <v-container>
                 <v-card title="Carian Institusi TVET" class="mb-3">
-                    <v-card-text>
-                        <v-text-field v-model="pusat" label="Pusat"></v-text-field>
+                    <v-card-text class="pb-0">
+                        <v-text-field v-model="pusat" label="Pusat" hint="Masukkan nama pusat"></v-text-field>
                     </v-card-text>
                     <v-card-actions>
-                        <v-btn color="teal-accent-4" text="Cari" variant="text" @click="apiPusat"></v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn prepend-icon="mdi mdi-store-search" color="indigo-darken-3" text="Cari" variant="text" @click="apiPusat"></v-btn>
                     </v-card-actions>
                 </v-card>
 
-                <v-list>
+                <v-list density="compact" nav>
                     <v-list-group v-for="institute in institutes" :value="institute.pusat">
                         <template v-slot:activator="{ props }">
                             <v-list-item
                             v-bind="props"
+                            prepend-icon="mdi mdi-store-settings"
                             :title="institute.pusat"
                             ></v-list-item>
                         </template>
@@ -64,6 +66,7 @@
         const config = {
             headers: {
             Accept: "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
             },
         };
 
