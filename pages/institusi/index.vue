@@ -15,7 +15,7 @@
                 </v-card>
 
                 <v-list density="compact" nav>
-                    <v-list-group v-for="institute in institutes" :value="institute.pusat">
+                    <v-list-group v-for="(institute, i) in institutes" :value="institute.pusat" :key="i">
                         <template v-slot:activator="{ props }">
                             <v-list-item
                             v-bind="props"
